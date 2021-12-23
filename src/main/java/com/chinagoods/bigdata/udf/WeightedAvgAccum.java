@@ -1,7 +1,8 @@
-package com.iamle.bigdata.flink.udx;
+package com.chinagoods.bigdata.udf;
 
 /**
  * Accumulator for WeightedAvg.
+ * @author xiaowei.song
  */
 public class WeightedAvgAccum {
   public long sum = 0;

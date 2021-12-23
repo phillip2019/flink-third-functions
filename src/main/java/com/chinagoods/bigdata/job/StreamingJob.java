@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.iamle.bigdata.flink.job;
+package com.chinagoods.bigdata.job;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;

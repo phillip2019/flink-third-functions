@@ -5,7 +5,7 @@
  * 使用
  * https://github.com/mngsk/device-detector
  */
-package com.iamle.bigdata.flink.udx;
+package com.chinagoods.bigdata.udf;
 
 
 import io.github.mngsk.devicedetector.Detection;

@@ -1,4 +1,4 @@
-package com.iamle.parse.format;
+package com.chinagoods.bigdata.util;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;

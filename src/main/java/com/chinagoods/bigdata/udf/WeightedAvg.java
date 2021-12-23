@@ -1,4 +1,4 @@
-package com.iamle.bigdata.flink.udx;
+package com.chinagoods.bigdata.udf;
 
 import org.apache.flink.table.functions.AggregateFunction;
 
@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 /**
  * Weighted Average user-defined aggregate function.
+ * @author xiaowei.song
  */
 public class WeightedAvg extends AggregateFunction<Long, WeightedAvgAccum> {
 

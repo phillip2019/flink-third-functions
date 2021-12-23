@@ -9,10 +9,10 @@
  * https://github.com/lionsoul2014/ip2region/issues/148
  */
 
-package com.iamle.bigdata.flink.udx;
+package com.chinagoods.bigdata.udf;
 
 import com.google.common.collect.ImmutableMap;
-import com.iamle.parse.format.SpecifierParseFormat;
+import com.chinagoods.bigdata.util.SpecifierParseFormat;
 import org.apache.commons.io.FileUtils;
 import org.apache.flink.table.functions.FunctionContext;
 import org.lionsoul.ip2region.DataBlock;
@@ -27,7 +27,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.Map;
-import java.util.StringJoiner;
 
 /**
  * @author wwek
@@ -43,7 +42,6 @@ public class Ip2Region extends ScalarFunction {
             // 因为jar无法读取文件,复制创建临时文件
             String tmpDir = System.getProperty("user.dir") + File.separator + "temp";
             String dbPath = tmpDir + File.separator + "ip2region.db";
-            System.out.println(dbPath);
             Log.info("init ip region db path [{}]", dbPath);
             File file = new File(dbPath);
 

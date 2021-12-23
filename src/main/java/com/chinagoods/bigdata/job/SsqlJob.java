@@ -1,12 +1,12 @@
 /**
  * https://ci.apache.org/projects/flink/flink-docs-release-1.11/zh/dev/table/common.html#%E5%88%9B%E5%BB%BA-tableenvironment
  */
-package com.iamle.bigdata.flink.job;
+package com.chinagoods.bigdata.job;
 
-import com.iamle.bigdata.flink.udx.Ip2Region;
-import com.iamle.bigdata.flink.udx.ParseUserAgentDd;
-import com.iamle.bigdata.flink.udx.ParseUserAgent;
-import com.iamle.bigdata.flink.udx.Phone2Region;
+import com.chinagoods.bigdata.udf.Ip2Region;
+import com.chinagoods.bigdata.udf.ParseUserAgentDd;
+import com.chinagoods.bigdata.udf.ParseUserAgent;
+import com.chinagoods.bigdata.udf.Phone2Region;
 import org.apache.flink.table.api.EnvironmentSettings;
 import org.apache.flink.table.api.TableEnvironment;
 import org.apache.flink.table.api.TableResult;

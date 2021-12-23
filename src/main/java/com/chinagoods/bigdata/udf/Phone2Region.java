@@ -1,4 +1,4 @@
-package com.iamle.bigdata.flink.udx;
+package com.chinagoods.bigdata.udf;
 
 /**
  * 电话号码归属地
@@ -8,14 +8,13 @@ package com.iamle.bigdata.flink.udx;
  */
 
 import com.google.common.collect.ImmutableMap;
-import com.iamle.parse.format.SpecifierParseFormat;
+import com.chinagoods.bigdata.util.SpecifierParseFormat;
 import me.ihxq.projects.pna.PhoneNumberInfo;
 import me.ihxq.projects.pna.PhoneNumberLookup;
 import org.apache.flink.table.functions.FunctionContext;
 import org.apache.flink.table.functions.ScalarFunction;
 
 import java.util.Map;
-import java.util.StringJoiner;
 
 /**
  * @author wwek

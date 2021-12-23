@@ -1,4 +1,4 @@
-package com.iamle.bigdata.flink.udx;
+package com.chinagoods.bigdata.udf;
 
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.table.functions.TableAggregateFunction;
@@ -6,6 +6,7 @@ import org.apache.flink.util.Collector;
 
 /**
  * The top2 user-defined table aggregate function.
+ * @author xiaowei.song
  */
 public class Top2 extends TableAggregateFunction<Tuple2<Integer, Integer>, Top2Accum> {
 

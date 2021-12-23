@@ -1,7 +1,8 @@
-package com.iamle.bigdata.flink.udx;
+package com.chinagoods.bigdata.udf;
 
 /**
  * Accumulator for Top2.
+ * @author xiaowei.song
  */
 public class Top2Accum {
   public Integer first;

@@ -5,17 +5,16 @@
  * 使用
  * https://yauaa.basjes.nl/UDF-ApacheFlinkTable.html
  */
-package com.iamle.bigdata.flink.udx;
+package com.chinagoods.bigdata.udf;
 
 
 import com.google.common.collect.ImmutableMap;
-import com.iamle.parse.format.SpecifierParseFormat;
+import com.chinagoods.bigdata.util.SpecifierParseFormat;
 import nl.basjes.parse.useragent.UserAgent;
 import nl.basjes.parse.useragent.UserAgentAnalyzer;
 import org.apache.flink.table.functions.FunctionContext;
 import org.apache.flink.table.functions.ScalarFunction;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,12 +22,6 @@ import java.util.Map;
  */
 public class ParseUserAgent extends ScalarFunction {
     private transient UserAgentAnalyzer userAgentAnalyzer;
-
-
-//    public ParseUserAgentYauua(int cacheSize, List<String> extractedFields) {
-//        this.cacheSize = cacheSize;
-//        this.extractedFields = extractedFields;
-//    }
 
     public String doParseUserAgent(String str, String format) {
         String resultStr = str;
