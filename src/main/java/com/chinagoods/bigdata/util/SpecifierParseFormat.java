@@ -35,7 +35,6 @@ public class SpecifierParseFormat {
     public String parseFormat() {
         strParseFormat = strFormat;
         specifierAndField.forEach((key, value) -> {
-            // System.out.println(key + "：" + value);
             String fieldValue = "";
             if (key.equals(SpecifierJson)) {
                 Gson gson = new Gson();
@@ -51,8 +50,8 @@ public class SpecifierParseFormat {
     /**
      * ip2regionParseFormat
      *
-     * @param format        String
-     * @param fieldAndValue Map<String, String>
+     * @param format        String 格式
+     * @param fieldAndValue 属性名和属性值
      * @return String
      */
     public String ip2regionParseFormat(String format,
@@ -80,8 +79,8 @@ public class SpecifierParseFormat {
     /**
      * phone2regionParseFormat
      *
-     * @param format        String
-     * @param fieldAndValue Map<String, String>
+     * @param format        String 格式
+     * @param fieldAndValue 属性名和属性值
      * @return String
      */
     public String phone2regionParseFormat(String format,
@@ -109,8 +108,8 @@ public class SpecifierParseFormat {
     /**
      * parseuseragentParseFormat
      *
-     * @param format        String
-     * @param fieldAndValue Map<String, String>
+     * @param format        String 格式
+     * @param fieldAndValue 属性名和属性值
      * @return String
      */
     public String parseuseragentParseFormat(String format,

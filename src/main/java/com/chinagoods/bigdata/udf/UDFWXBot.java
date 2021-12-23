@@ -19,9 +19,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @description 发送消息给企业微信机器人
+ * 发送消息给企业微信机器人
+ *
  * @author xiaowei.song
- * @date 2021-09-28 21:41
+ * date 2021-09-28
  * @version v1.0.0       
  **/
 public class UDFWXBot extends ScalarFunction {
@@ -41,10 +42,14 @@ public class UDFWXBot extends ScalarFunction {
 
 
     /**
-     * @description 发送企业微信机器人
-     * @return 是否发送成功
+     * 发送企业微信机器人
+     *
+     * @param wxWebHook 企业微信消息发送webHook地址
+     * @param markdownTemplate markdown消息模板
+     * @param params 发送参数内容map结构
+     * @return bool 是否发送成功
      **/
-    public Boolean eval(String wxWebHook, String markdownTemplate, Map<String, String> params) throws IOException {
+    public Boolean eval(String wxWebHook, String markdownTemplate, Map<String, String> params) {
         if (StringUtils.isBlank(wxWebHook)) {
             logger.error("微信机器人地址输入为空，请检查之后再试");
             return Boolean.FALSE;
@@ -94,12 +99,25 @@ public class UDFWXBot extends ScalarFunction {
             return Boolean.FALSE;
         }
 
-        JsonNode rspWkJn = JacksonBuilder.mapper.readTree(webHookResponse.body().string());
+        assert webHookResponse.body() != null;
+        ResponseBody respBody = webHookResponse.body();
+        String contentStr = "{\"errcode\": -1, \"errmsg\": \"返回内容为空\"}";
+        try {
+            contentStr = respBody.string();
+        } catch (IOException e) {
+            logger.error("发送消息失败，获取消息内容异常", e);
+        }
+        JsonNode rspWkJn = (JacksonBuilder.mapper.createObjectNode()).put("errcode", -1).put("errmsg", "返回内容异常");
+        try {
+            rspWkJn = JacksonBuilder.mapper.readTree(contentStr);
+        } catch (JsonProcessingException e) {
+            logger.error("发送消息失败，反序列化消息内容异常，消息内容为: {}", contentStr, e);
+        }
+
         int errorCode = rspWkJn.path("errcode").asInt(-1);
         if (errorCode != 0) {
             logger.error("发送失败，wxWebHook errorCode: {}, errorInfo: {}", errorCode, rspWkJn.path("errmsg").asText(""));
             return Boolean.FALSE;
-
         }
 
         logger.info("发送成功， {}", rspWkJn.toString());
