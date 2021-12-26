@@ -1,7 +1,9 @@
 package com.chinagoods.bigdata.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -9,19 +11,20 @@ import java.util.Map;
  * @author wwek
  */
 public class SpecifierParseFormat {
-    private static final String SpecifierJson = "%JSON";
-    String strFormat;
-    String strParseFormat;
-    Map<String, String> specifierAndField;
-    Map<String, String> fieldAndValue;
+    private static final Logger logger = LoggerFactory.getLogger(SpecifierParseFormat.class);
+
+    private static final String SPECIFIER_JSON = "%JSON";
+    private String strFormat;
+    private String strParseFormat;
+    private Map<String, String> specifierAndField;
+    private Map<String, String> fieldAndValue;
 
     public SpecifierParseFormat() {
     }
 
     public SpecifierParseFormat(String strFormat,
                                 Map<String, String> specifierAndField,
-                                Map<String, String> fieldAndValue
-    ) {
+                                Map<String, String> fieldAndValue) {
         setStrFormat(strFormat);
         setSpecifierAndField(specifierAndField);
         setFieldAndValue(fieldAndValue);
@@ -36,9 +39,12 @@ public class SpecifierParseFormat {
         strParseFormat = strFormat;
         specifierAndField.forEach((key, value) -> {
             String fieldValue = "";
-            if (key.equals(SpecifierJson)) {
-                Gson gson = new Gson();
-                fieldValue = gson.toJson(fieldAndValue);
+            if (key.equals(SPECIFIER_JSON)) {
+                try {
+                    fieldValue = JacksonBuilder.mapper.writeValueAsString(fieldAndValue);
+                } catch (JsonProcessingException e) {
+                    logger.error("序列化错误，原始输入为: {}", fieldAndValue, e);
+                }
             } else {
                 fieldValue = fieldAndValue.getOrDefault(value, "");
             }
