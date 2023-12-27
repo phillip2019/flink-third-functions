@@ -1,0 +1,2 @@
+com.chinagoods.bigdata.connectors.http.internal.table.sink.HttpDynamicTableSinkFactory
+com.chinagoods.bigdata.connectors.http.internal.table.sink.Slf4jHttpPostRequestCallbackFactory
