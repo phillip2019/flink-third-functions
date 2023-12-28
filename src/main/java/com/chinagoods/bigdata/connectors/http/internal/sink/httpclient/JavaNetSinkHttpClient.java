@@ -81,7 +81,9 @@ public class JavaNetSinkHttpClient implements SinkHttpClient {
             String endpointUrl) {
 
         List<CompletableFuture<JavaNetHttpResponseWrapper>> responseFutures = requestSubmitter.submit(endpointUrl, requestEntries);
+        log.info("请求任务提交成功，请求大小为: {}", responseFutures.size());
         CompletableFuture<Void> allFutures = CompletableFuture.allOf(responseFutures.toArray(new CompletableFuture[0]));
+        log.info("请求任务完成，请求大小为: {}", responseFutures.size());
         return allFutures.thenApply(_void -> responseFutures.stream().map(CompletableFuture::join)
             .collect(Collectors.toList()));
     }
@@ -109,6 +111,10 @@ public class JavaNetSinkHttpClient implements SinkHttpClient {
                 statusCodeChecker.isErrorCode(optResponse.get().code())) {
                 failedResponses.add(sinkRequestEntry);
             } else {
+                try {
+                    log.info("请求返回内容为： {}", Objects.requireNonNull(optResponse.get().body()).string());
+                } catch (IOException ignored) {
+                }
                 successfulResponses.add(sinkRequestEntry);
             }
         }

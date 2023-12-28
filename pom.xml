@@ -23,7 +23,7 @@ under the License.
 
     <groupId>com.chinagoods.bigdata</groupId>
     <artifactId>flink-third-functions</artifactId>
-    <version>1.2.2</version>
+    <version>1.2.2.1</version>
     <packaging>jar</packaging>
     <description>Some useful custom flink udf functions.</description>
 

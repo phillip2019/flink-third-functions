@@ -12,8 +12,6 @@ import com.chinagoods.bigdata.connectors.http.internal.utils.ThreadUtils;
 
 public class PerRequestRequestSubmitterFactory implements RequestSubmitterFactory {
 
-    // TODO Add this property to config. Make sure to add note in README.md that will describe that
-    //  any value greater than one will break order of messages.
     int HTTP_CLIENT_THREAD_POOL_SIZE = 1;
 
     @Override
