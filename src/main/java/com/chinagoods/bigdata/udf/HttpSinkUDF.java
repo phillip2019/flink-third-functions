@@ -109,4 +109,43 @@ public class HttpSinkUDF extends ScalarFunction {
     public void close() throws Exception {
         super.close();
     }
+
+    public static void main(String[] args) throws Exception {
+        //密钥
+        String pubKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQClXgJyPgZdKjWXdhC4vC.zaKsvbH.X7lA.GEt6w1hSDRATghx.53iDIaHUWqmhb7PSlzCqEeviRjKV.tuFjIW5jYvDVNeUbsAdgTJUKtaulP.7_c_FqPsz80xMd7iQHF.Ie0AJLYFDFTP85XN7XJW9o50oJAdBzgcEnZveGwcqKQIDAQAB";
+        String url = "https://testapiserver.chinagoods.com/yk/portal/open/cg/potential/customer"; //请求路径
+        MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
+
+        ObjectNode data = JacksonBuilder.mapper.createObjectNode(); //业务参数
+        data.put("buyerType", "user");
+        data.put("buyerUserId", "12345");
+        data.put("shopUserId", "54321");
+        String appId = "CG001"; //应用标识
+        String timestamp = String.valueOf(System.currentTimeMillis());
+        ObjectNode content = JacksonBuilder.mapper.createObjectNode();; //业务报文内容
+        content.put("data", data);
+        content.put("appId", appId);
+        content.put("timestamp", timestamp);
+        String contentJsonStr = content.toString(); //报文json串
+        byte[] encrypted = RSAUtils.encryptByPublicKey(contentJsonStr.getBytes(), pubKey);
+        String sign = Base64Utils.encode(encrypted); //签名
+        content.put("sign", sign);
+        RequestBody body = RequestBody.create(mediaType, JacksonBuilder.mapper.writeValueAsString(content));
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(5, TimeUnit.SECONDS)
+                .writeTimeout(5, TimeUnit.SECONDS)
+                .readTimeout(5, TimeUnit.SECONDS)
+                .build();
+        Response response = client.newCall(request).execute();
+        System.out.println(response.body().string());
+
+        Response response2 = client.newCall(request).execute();
+        System.out.println(response2.body().string());
+
+
+    }
 }

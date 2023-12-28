@@ -9,7 +9,6 @@ import lombok.experimental.UtilityClass;
  */
 @UtilityClass
 @NoArgsConstructor(access = AccessLevel.NONE)
-// TODO Change this name to HttpConnectorConfigProperties
 public final class HttpConnectorConfigProperties {
 
     public static final String PROP_DELIM = ",";
@@ -84,6 +83,17 @@ public final class HttpConnectorConfigProperties {
     public static final String SINK_HTTP_WRITER_THREAD_POOL_SIZE =
         GID_CONNECTOR_HTTP + "sink.writer.thread-pool.size";
 
+    public static final String SINK_HTTP_REQUEST_ENCRYPTION_MODE =
+            GID_CONNECTOR_HTTP + "sink.writer.request.encryption.mode";
+
+    public static final String SINK_HTTP_REQUEST_ENCRYPTION_XSYK_PUB_KEY =
+            GID_CONNECTOR_HTTP + "sink.writer.request.encryption.xsyk.pub.key";
+
+    public static final String SINK_HTTP_REQUEST_ENCRYPTION_XSYK_APP_ID =
+            GID_CONNECTOR_HTTP + "sink.writer.request.encryption.xsyk.app.id";
+
+    public static final String HTTP_CLIENT_THREAD_POOL_SIZE =
+            GID_CONNECTOR_HTTP + "client.thread.pool.size";
     // -----------------------------------------------------
 
 

@@ -1,9 +1,10 @@
 package com.chinagoods.bigdata.connectors.http.internal.table.sink;
 
+import com.chinagoods.bigdata.connectors.http.internal.config.SinkRequestEncryptionMode;
 import org.apache.flink.configuration.ConfigOption;
 import org.apache.flink.configuration.ConfigOptions;
 
-import static com.chinagoods.bigdata.connectors.http.internal.config.HttpConnectorConfigProperties.SINK_REQUEST_CALLBACK_IDENTIFIER;
+import static com.chinagoods.bigdata.connectors.http.internal.config.HttpConnectorConfigProperties.*;
 
 /**
  * Table API options for {@link HttpDynamicSink}.
@@ -24,4 +25,19 @@ public class HttpDynamicSinkConnectorOptions {
         ConfigOptions.key(SINK_REQUEST_CALLBACK_IDENTIFIER)
             .stringType()
             .defaultValue(Slf4jHttpPostRequestCallbackFactory.IDENTIFIER);
+
+    public static final ConfigOption<String> REQUEST_ENCRYPTION_MODE =
+            ConfigOptions.key(SINK_HTTP_REQUEST_ENCRYPTION_MODE)
+                    .stringType()
+                    .defaultValue(SinkRequestEncryptionMode.PLAIN.getMode());
+
+    public static final ConfigOption<String> REQUEST_ENCRYPTION_XSYK_PUB_KEY =
+            ConfigOptions.key(SINK_HTTP_REQUEST_ENCRYPTION_XSYK_PUB_KEY)
+                    .stringType()
+                    .defaultValue("");
+
+    public static final ConfigOption<String> REQUEST_ENCRYPTION_XSYK_APP_ID =
+            ConfigOptions.key(SINK_HTTP_REQUEST_ENCRYPTION_XSYK_APP_ID)
+                    .stringType()
+                    .defaultValue("CG001");
 }

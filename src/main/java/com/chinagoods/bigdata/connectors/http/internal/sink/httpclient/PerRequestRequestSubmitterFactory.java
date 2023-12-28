@@ -4,6 +4,7 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.chinagoods.bigdata.connectors.http.internal.config.HttpConnectorConfigProperties;
 import org.apache.flink.util.concurrent.ExecutorThreadFactory;
 
 import com.chinagoods.bigdata.connectors.http.internal.utils.JavaNetHttpClientFactory;
@@ -17,7 +18,10 @@ public class PerRequestRequestSubmitterFactory implements RequestSubmitterFactor
 
     @Override
     public RequestSubmitter createSubmitter(Properties properties, String[] headersAndValues) {
-
+        HTTP_CLIENT_THREAD_POOL_SIZE = Integer.parseInt(properties.getProperty(
+                HttpConnectorConfigProperties.HTTP_CLIENT_THREAD_POOL_SIZE,
+                String.valueOf(HTTP_CLIENT_THREAD_POOL_SIZE)
+        ));
         ExecutorService httpClientExecutor =
             Executors.newFixedThreadPool(
                 HTTP_CLIENT_THREAD_POOL_SIZE,

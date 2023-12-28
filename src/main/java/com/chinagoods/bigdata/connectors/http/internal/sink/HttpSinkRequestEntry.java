@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * Represents a single {@link com.getindata.connectors.http.HttpSink} request. Contains the HTTP
+ * Represents a single {@link com.chinagoods.bigdata.connectors.http.HttpSink} request. Contains the HTTP
  * method name, Content-Type header value, and byte representation of the body of the request.
  */
 @RequiredArgsConstructor

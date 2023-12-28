@@ -7,6 +7,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.chinagoods.bigdata.connectors.http.internal.config.SinkRequestEncryptionMode;
 import com.chinagoods.bigdata.connectors.http.internal.sink.HttpSinkRequestEntry;
 import okhttp3.OkHttpClient;
 import org.apache.flink.util.concurrent.ExecutorThreadFactory;
@@ -19,6 +20,8 @@ public abstract class AbstractRequestSubmitter implements RequestSubmitter {
     protected static final int HTTP_CLIENT_PUBLISHING_THREAD_POOL_SIZE = 1;
 
     protected static final String DEFAULT_REQUEST_TIMEOUT_SECONDS = "30";
+
+    protected static final String DEFAULT_REQUEST_ENCRYPTION_MODE = SinkRequestEncryptionMode.PLAIN.getMode();
 
     /**
      * Thread pool to handle HTTP response from HTTP client.

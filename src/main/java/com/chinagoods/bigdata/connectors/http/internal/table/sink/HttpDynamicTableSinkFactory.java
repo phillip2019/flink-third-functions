@@ -3,7 +3,9 @@ package com.chinagoods.bigdata.connectors.http.internal.table.sink;
 import java.util.Properties;
 import java.util.Set;
 
+import com.chinagoods.bigdata.connectors.http.internal.config.SinkRequestEncryptionMode;
 import org.apache.commons.collections4.SetUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.configuration.ConfigOption;
 import org.apache.flink.configuration.ReadableConfig;
 import org.apache.flink.connector.base.table.AsyncDynamicTableSinkFactory;
@@ -15,6 +17,7 @@ import com.chinagoods.bigdata.connectors.http.HttpPostRequestCallbackFactory;
 import com.chinagoods.bigdata.connectors.http.internal.config.HttpConnectorConfigProperties;
 import com.chinagoods.bigdata.connectors.http.internal.sink.httpclient.HttpRequest;
 import com.chinagoods.bigdata.connectors.http.internal.utils.ConfigUtils;
+
 import static com.chinagoods.bigdata.connectors.http.internal.table.sink.HttpDynamicSinkConnectorOptions.*;
 
 /**
@@ -95,6 +98,34 @@ public class HttpDynamicTableSinkFactory extends AsyncDynamicTableSinkFactory {
                                 "Invalid option '%s'. It is expected to be either 'POST' or 'PUT'.",
                                 INSERT_METHOD.key()
                         ));
+            }
+        });
+
+        // 校验加密方式，目前支持2种方式
+        tableOptions.getOptional(REQUEST_ENCRYPTION_MODE).ifPresent(mode -> {
+            SinkRequestEncryptionMode encryptionMode = SinkRequestEncryptionMode.PLAIN;
+            try {
+                encryptionMode = SinkRequestEncryptionMode.valueOf(StringUtils.upperCase(mode));
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException(
+                        String.format(
+                                "Invalid option '%s', value: '%s'. It is expected to be either 'plain' or 'xsyk'.",
+                                REQUEST_ENCRYPTION_MODE.key(), mode
+                        ));
+            }
+
+            // 若枚举值为xsyk，则加密公钥必填
+            if (SinkRequestEncryptionMode.XSYK.getMode().equals(mode)) {
+                String pubKey = tableOptions.getOptional(REQUEST_ENCRYPTION_XSYK_PUB_KEY).orElse("");
+                if (StringUtils.isBlank(pubKey)) {
+                    throw new IllegalArgumentException(
+                            String.format("If the encryption method is xsyk, current value is [%s], the public key is required.", pubKey));
+                }
+                String appId = tableOptions.getOptional(REQUEST_ENCRYPTION_XSYK_APP_ID).orElse("");
+                if (StringUtils.isBlank(appId)) {
+                    throw new IllegalArgumentException(
+                            String.format("If the encryption method is xsyk, current value is [%s], the app id is required.", appId));
+                }
             }
         });
     }

@@ -110,6 +110,8 @@ public class HttpSinkInternal<InputT> extends AsyncSinkBase<InputT, HttpSinkRequ
         this.sinkHttpClientBuilder =
             Preconditions.checkNotNull(sinkHttpClientBuilder,
                 "The HTTP client builder must not be null when initializing HTTP Sink.");
+        // 若配置了xsyk加密方式，则必须填写加密公钥
+
         this.properties = properties;
     }
 
