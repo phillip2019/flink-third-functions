@@ -71,6 +71,7 @@ public class HttpDynamicTableSinkFactory extends AsyncDynamicTableSinkFactory {
         return builder.build();
     }
 
+
     @Override
     public String factoryIdentifier() {
         return IDENTIFIER;

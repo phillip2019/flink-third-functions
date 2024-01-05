@@ -92,8 +92,8 @@ public class HttpSinkWriter<InputT> extends AsyncSinkWriter<InputT, HttpSinkRequ
             if (err != null) {
                 int failedRequestsNumber = requestEntries.size();
                 log.error(
-                    "Http Sink fatally failed to write all {} requests",
-                    failedRequestsNumber);
+                    "Http Sink fatally failed to write all {} requests, error: {}",
+                    failedRequestsNumber, err);
                 numRecordsSendErrorsCounter.inc(failedRequestsNumber);
 
                 // TODO: Make `HttpSinkInternal` retry the failed requests.
