@@ -152,6 +152,7 @@ public class HttpDynamicSink extends AsyncDynamicTableSink<HttpSinkRequestEntry>
                 .setProperties(properties);
         addAsyncOptionsToSinkBuilder(builder);
 
+        // TODO 配置sink并行度
         return SinkV2Provider.of(builder.build());
     }
 
