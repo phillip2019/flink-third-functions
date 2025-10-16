@@ -10,14 +10,16 @@ import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 import org.apache.flink.util.StringUtils;
 
-import javax.net.ssl.*;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.NONE)
@@ -44,8 +46,6 @@ public class JavaNetHttpClientFactory {
         );
         return new OkHttpClient.Builder()
                 .connectTimeout(Duration.ofSeconds(httpRequestTimeOutSeconds))
-                .connectTimeout(Duration.ofSeconds(httpRequestTimeOutSeconds)) // 设置连接超时时间为10秒
-                .readTimeout(Duration.ofSeconds(httpRequestTimeOutSeconds)) // 设置读取超时时间为10秒
                 .sslSocketFactory(sslSocketFactory)
                 .build();
     }
@@ -54,8 +54,8 @@ public class JavaNetHttpClientFactory {
      * Creates Java's {@link OkHttpClient} instance that will be using provided Executor for all async
      * calls.
      *
-     * @param properties      properties used to build {@link SSLContext}
-     * @param executorService {@link Executor} for async calls.
+     * @param properties properties used to build {@link SSLContext}
+     * @param executorService   {@link Executor} for async calls.
      * @return new {@link OkHttpClient} instance.
      */
     public static OkHttpClient createClient(Properties properties, ExecutorService executorService) {
@@ -65,44 +65,13 @@ public class JavaNetHttpClientFactory {
                         DEFAULT_REQUEST_TIMEOUT_SECONDS)
         );
 
-        try {
-            // Create a trust manager that does not validate certificate chains
-            final TrustManager[] trustAllCerts = new TrustManager[]{
-                    new X509TrustManager() {
-                        @Override
-                        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-                        }
-
-                        @Override
-                        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-                        }
-
-                        @Override
-                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                            return new java.security.cert.X509Certificate[]{};
-                        }
-                    }
-            };
-            SSLContext sslContext = getSslContext(properties);
-            // Install the all-trusting trust manager
-            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
-            // Create an ssl socket factory with our all-trusting manager
-            final javax.net.ssl.SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
-
-            OkHttpClient.Builder builder = new OkHttpClient.Builder();
-            builder.dispatcher(new Dispatcher(executorService))
-                    .connectTimeout(Duration.ofSeconds(httpRequestTimeOutSeconds))
-                    .sslSocketFactory(sslSocketFactory)
-                    .hostnameVerifier(new HostnameVerifier() {
-                        @Override
-                        public boolean verify(String hostname, SSLSession session) {
-                            return true;
-                        }
-                    });
-            return builder.build();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        SSLContext sslContext = getSslContext(properties);
+        SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+        return new OkHttpClient.Builder()
+                .dispatcher(new Dispatcher(executorService))
+                .connectTimeout(Duration.ofSeconds(httpRequestTimeOutSeconds))
+                .sslSocketFactory(sslSocketFactory)
+            .build();
     }
 
     /**
@@ -122,17 +91,17 @@ public class JavaNetHttpClientFactory {
         SecurityContext securityContext = createSecurityContext(properties);
 
         boolean selfSignedCert = Boolean.parseBoolean(
-                properties.getProperty(HttpConnectorConfigProperties.ALLOW_SELF_SIGNED, "false"));
+            properties.getProperty(HttpConnectorConfigProperties.ALLOW_SELF_SIGNED, "false"));
 
         String[] serverTrustedCerts = properties
-                .getProperty(HttpConnectorConfigProperties.SERVER_TRUSTED_CERT, "")
-                .split(HttpConnectorConfigProperties.PROP_DELIM);
+            .getProperty(HttpConnectorConfigProperties.SERVER_TRUSTED_CERT, "")
+            .split(HttpConnectorConfigProperties.PROP_DELIM);
 
         String clientCert = properties
-                .getProperty(HttpConnectorConfigProperties.CLIENT_CERT, "");
+            .getProperty(HttpConnectorConfigProperties.CLIENT_CERT, "");
 
         String clientPrivateKey = properties
-                .getProperty(HttpConnectorConfigProperties.CLIENT_PRIVATE_KEY, "");
+            .getProperty(HttpConnectorConfigProperties.CLIENT_PRIVATE_KEY, "");
 
         for (String cert : serverTrustedCerts) {
             if (!StringUtils.isNullOrWhitespaceOnly(cert)) {
@@ -141,7 +110,7 @@ public class JavaNetHttpClientFactory {
         }
 
         if (!StringUtils.isNullOrWhitespaceOnly(clientCert)
-                && !StringUtils.isNullOrWhitespaceOnly(clientPrivateKey)) {
+            && !StringUtils.isNullOrWhitespaceOnly(clientPrivateKey)) {
             securityContext.addMTlsCerts(clientCert, clientPrivateKey);
         }
 
@@ -151,8 +120,8 @@ public class JavaNetHttpClientFactory {
     }
 
     private static TrustManager[] getTrustedManagers(
-            SecurityContext securityContext,
-            boolean selfSignedCert) {
+        SecurityContext securityContext,
+        boolean selfSignedCert) {
 
         TrustManager[] trustManagers = securityContext.getTrustManagers();
 
@@ -165,8 +134,8 @@ public class JavaNetHttpClientFactory {
 
     private static List<TrustManager> wrapWithSelfSignedManagers(TrustManager[] trustManagers) {
         log.warn("Creating Trust Managers for self-signed certificates - not Recommended. "
-                + "Use [" + HttpConnectorConfigProperties.SERVER_TRUSTED_CERT + "] "
-                + "connector property to add certificated as trusted.");
+            + "Use [" + HttpConnectorConfigProperties.SERVER_TRUSTED_CERT + "] "
+            + "connector property to add certificated as trusted.");
 
         List<TrustManager> selfSignedManagers = new ArrayList<>(trustManagers.length);
         for (TrustManager trustManager : trustManagers) {
@@ -185,14 +154,14 @@ public class JavaNetHttpClientFactory {
     private static SecurityContext createSecurityContext(Properties properties) {
 
         String keyStorePath =
-                properties.getProperty(HttpConnectorConfigProperties.KEY_STORE_PATH, "");
+            properties.getProperty(HttpConnectorConfigProperties.KEY_STORE_PATH, "");
 
         if (StringUtils.isNullOrWhitespaceOnly(keyStorePath)) {
             return SecurityContext.create();
         } else {
             char[] storePassword =
-                    properties.getProperty(HttpConnectorConfigProperties.KEY_STORE_PASSWORD, "")
-                            .toCharArray();
+                properties.getProperty(HttpConnectorConfigProperties.KEY_STORE_PASSWORD, "")
+                    .toCharArray();
             if (storePassword.length == 0) {
                 throw new RuntimeException("Missing password for provided KeyStore");
             }

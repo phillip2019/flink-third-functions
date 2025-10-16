@@ -112,7 +112,7 @@ public class JavaNetSinkHttpClient implements SinkHttpClient {
                 failedResponses.add(sinkRequestEntry);
             } else {
                 try {
-                    log.info("请求返回内容为： {}", Objects.requireNonNull(optResponse.get().body()).string());
+                    log.info("请求返回内容为： {}", Objects.requireNonNull(optResponse.get().peekBody(Long.MAX_VALUE)).string());
                 } catch (IOException ignored) {
                 }
                 successfulResponses.add(sinkRequestEntry);

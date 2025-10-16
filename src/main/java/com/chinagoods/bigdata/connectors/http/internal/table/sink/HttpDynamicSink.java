@@ -17,6 +17,7 @@ import org.apache.flink.table.connector.sink.SinkV2Provider;
 import org.apache.flink.table.data.RowData;
 import org.apache.flink.table.types.DataType;
 import org.apache.flink.util.Preconditions;
+import org.apache.flink.types.RowKind;
 
 import com.chinagoods.bigdata.connectors.http.HttpPostRequestCallback;
 import com.chinagoods.bigdata.connectors.http.HttpSink;
@@ -28,6 +29,7 @@ import com.chinagoods.bigdata.connectors.http.internal.table.SerializationSchema
 import com.chinagoods.bigdata.connectors.http.internal.utils.HttpHeaderUtils;
 import static com.chinagoods.bigdata.connectors.http.internal.table.sink.HttpDynamicSinkConnectorOptions.INSERT_METHOD;
 import static com.chinagoods.bigdata.connectors.http.internal.table.sink.HttpDynamicSinkConnectorOptions.URL;
+import static org.apache.flink.util.Preconditions.checkState;
 
 /**
  * A dynamic HTTP Sink based on {@link AsyncDynamicTableSink} that adds Table API support for {@link
@@ -112,9 +114,23 @@ public class HttpDynamicSink extends AsyncDynamicTableSink<HttpSinkRequestEntry>
         this.properties = properties;
     }
 
+//    @Override
+//    public ChangelogMode getChangelogMode(ChangelogMode requestedMode) {
+//        return encodingFormat.getChangelogMode();
+//    }
+
     @Override
     public ChangelogMode getChangelogMode(ChangelogMode requestedMode) {
-        return encodingFormat.getChangelogMode();
+        validatePrimaryKey(requestedMode);
+        return ChangelogMode.newBuilder()
+                .addContainedKind(RowKind.INSERT)
+                .addContainedKind(RowKind.DELETE)
+                .addContainedKind(RowKind.UPDATE_AFTER)
+                .build();
+    }
+
+    private void validatePrimaryKey(ChangelogMode requestedMode) {
+//        checkState(ChangelogMode.insertOnly().equals(requestedMode), "please declare primary key for sink table when query contains update/delete record.");
     }
 
     @Override

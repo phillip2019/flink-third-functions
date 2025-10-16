@@ -43,7 +43,7 @@ public class Slf4jHttpPostRequestCallback implements HttpPostRequestCallback<Htt
             );
         } else {
             AtomicReference<String> responseContentAR = new AtomicReference<>("");
-            Optional.ofNullable(response.body()).ifPresent(e -> {
+            Optional.of(response.peekBody(Long.MAX_VALUE)).ifPresent(e -> {
                 try {
                     responseContentAR.set(e.string());
                 } catch (IOException ex) {
