@@ -19,28 +19,19 @@ package com.chinagoods.bigdata.udf;
 
 import org.apache.flink.table.functions.AggregateFunction;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.chinagoods.bigdata.domain.GroupConcatAccumulator;
 
 /**
  * GroupConcat UDAF - 实现类似Hive中group_concat的功能
  * 将同一组内的多个字符串值连接成一个字符串，使用指定的分隔符
- * 
+ *
  * 使用示例:
  * SELECT group_concat(name) FROM table GROUP BY category;
  * SELECT group_concat(name, '|') FROM table GROUP BY category;
- * 
+ *
  * @author xiaowei.song
  */
-public class GroupConcatUDAF extends AggregateFunction<String, GroupConcatUDAF.GroupConcatAccumulator> {
-
-    /**
-     * 累加器类 - 存储聚合过程中的中间状态
-     */
-    public static class GroupConcatAccumulator {
-        public List<String> values = new ArrayList<>();
-        public String separator = ","; // 默认分隔符
-    }
+public class GroupConcatUDAF extends AggregateFunction<String, GroupConcatAccumulator> {
 
     @Override
     public GroupConcatAccumulator createAccumulator() {
