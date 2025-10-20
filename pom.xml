@@ -467,6 +467,10 @@ under the License.
                 <version>3.2.4</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <!-- 设置最终jar包名称，添加shadow后缀避免冲突 -->
+                    <finalName>${project.artifactId}-${project.version}-shadow</finalName>
+                    <!--  使用 shadedClassifierName 会生成两个jar: 原始jar 和 带classifier的shaded jar -->
+                    <shadedClassifierName>shaded</shadedClassifierName>
                 </configuration>
                 <executions>
                     <!-- Run shade goal on package phase -->
@@ -478,27 +482,79 @@ under the License.
                         <configuration>
                             <shadeTestJar>false</shadeTestJar>
                             <artifactSet>
-                                <!--<includes>
-                                    &lt;!&ndash;we include only kafka-clients which is used in
-                                    schema-registry-client (e.g. configuration classes). &ndash;&gt;
-                                    <include>org.apache.kafka:kafka-clients</include>
-                                    <include>com.fasterxml.jackson.core:*</include>
-                                    <include>org.apache.commons:commons-compress</include>
-                                </includes>-->
                                 <excludes>
+                                    <!-- 排除 Flink 相关依赖，由运行环境提供 -->
+                                    <exclude>org.apache.flink:*</exclude>
                                     <exclude>org.apache.flink:force-shading</exclude>
-                                    <exclude>com.google.code.findbugs:jsr305</exclude>
+                                    <!-- 排除 Scala 相关 -->
+                                    <exclude>org.scala-lang:*</exclude>
+                                    <!-- 排除日志相关，由环境提供 -->
                                     <exclude>org.slf4j:*</exclude>
                                     <exclude>log4j:*</exclude>
+                                    <exclude>org.apache.logging.log4j:*</exclude>
+                                    <!-- 排除其他由环境提供的依赖 -->
+                                    <exclude>com.google.code.findbugs:jsr305</exclude>
+                                    <exclude>org.projectlombok:lombok</exclude>
                                 </excludes>
                             </artifactSet>
                             <relocations combine.children="append">
+                                <!-- 对可能冲突的第三方库进行包重定位 -->
+                                <!-- Jackson 系列 -->
                                 <relocation>
                                     <pattern>com.fasterxml.jackson</pattern>
-                                    <shadedPattern>com.chinagoods.shaded.com.fasterxml.jackson</shadedPattern>
+                                    <shadedPattern>com.chinagoods.bigdata.shaded.com.fasterxml.jackson</shadedPattern>
+                                </relocation>
+                                <!-- Guava -->
+                                <relocation>
+                                    <pattern>com.google.common</pattern>
+                                    <shadedPattern>com.chinagoods.bigdata.shaded.com.google.common</shadedPattern>
+                                </relocation>
+                                <!-- Gson -->
+                                <relocation>
+                                    <pattern>com.google.gson</pattern>
+                                    <shadedPattern>com.chinagoods.bigdata.shaded.com.google.gson</shadedPattern>
+                                </relocation>
+                                <!-- OkHttp -->
+                                <relocation>
+                                    <pattern>okhttp3</pattern>
+                                    <shadedPattern>com.chinagoods.bigdata.shaded.okhttp3</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>okio</pattern>
+                                    <shadedPattern>com.chinagoods.bigdata.shaded.okio</shadedPattern>
+                                </relocation>
+                                <!-- Apache HttpClient -->
+                                <relocation>
+                                    <pattern>org.apache.http</pattern>
+                                    <shadedPattern>com.chinagoods.bigdata.shaded.org.apache.http</shadedPattern>
+                                </relocation>
+                                <!-- Apache Commons -->
+                                <relocation>
+                                    <pattern>org.apache.commons</pattern>
+                                    <shadedPattern>com.chinagoods.bigdata.shaded.org.apache.commons</shadedPattern>
+                                </relocation>
+                                <!-- Commons IO -->
+                                <relocation>
+                                    <pattern>org.apache.commons.io</pattern>
+                                    <shadedPattern>com.chinagoods.bigdata.shaded.org.apache.commons.io</shadedPattern>
+                                </relocation>
+                                <!-- Joda Time -->
+                                <relocation>
+                                    <pattern>org.joda.time</pattern>
+                                    <shadedPattern>com.chinagoods.bigdata.shaded.org.joda.time</shadedPattern>
+                                </relocation>
+                                <!-- Kotlin -->
+                                <relocation>
+                                    <pattern>kotlin</pattern>
+                                    <shadedPattern>com.chinagoods.bigdata.shaded.kotlin</shadedPattern>
+                                </relocation>
+                                <!-- Velocity -->
+                                <relocation>
+                                    <pattern>org.apache.velocity</pattern>
+                                    <shadedPattern>com.chinagoods.bigdata.shaded.org.apache.velocity</shadedPattern>
                                 </relocation>
                             </relocations>
-                            <shadedArtifactAttached>false</shadedArtifactAttached>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
                             <filters>
                                 <filter>
                                     <!-- DO not copy the signatures in the META-INF folder.
@@ -509,6 +565,7 @@ under the License.
                                         <exclude>META-INF/*.SF</exclude>
                                         <exclude>META-INF/*.DSA</exclude>
                                         <exclude>META-INF/*.RSA</exclude>
+                                        <exclude>META-INF/*.MF</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
@@ -518,6 +575,10 @@ under the License.
                                 </transformer>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer">
+                                </transformer>
+                                <!-- 聚合所有的 META-INF/services 文件 -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/services/org.apache.flink.table.factories.Factory</resource>
                                 </transformer>
                             </transformers>
                         </configuration>

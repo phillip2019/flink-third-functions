@@ -1,4 +1,4 @@
-package com.chinagoods.bigdata.domain;
+package com.chinagoods.bigdata.udf;
 
 import java.io.Serializable;
 import java.util.ArrayList;

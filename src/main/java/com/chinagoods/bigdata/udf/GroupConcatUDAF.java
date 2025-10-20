@@ -19,7 +19,6 @@ package com.chinagoods.bigdata.udf;
 
 import org.apache.flink.table.functions.AggregateFunction;
 
-import com.chinagoods.bigdata.domain.GroupConcatAccumulator;
 
 /**
  * GroupConcat UDAF - 实现类似Hive中group_concat的功能
